@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.jeanlima.springrestapiapp.enums.StatusPedido;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,7 +40,7 @@ public class Pedido {
     private BigDecimal total;
 
 
-    @OneToMany(mappedBy = "pedido")
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itens;
 
     @Enumerated(EnumType.STRING)

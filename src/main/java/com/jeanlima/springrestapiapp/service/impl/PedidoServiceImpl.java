@@ -137,4 +137,9 @@ public class PedidoServiceImpl implements PedidoService {
                 })
                 .collect(Collectors.toList());
     }
+ 
+    @Override
+    public void delete(Integer id) {
+        repository.deleteById(id);
+    }
 }

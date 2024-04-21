@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,7 +81,7 @@ public class PedidoController {
         ).collect(Collectors.toList());
     }
 
-     @PatchMapping("{id}")
+    @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateStatus(@PathVariable Integer id ,
                              @RequestBody AtualizacaoStatusPedidoDTO dto){
@@ -91,5 +92,12 @@ public class PedidoController {
     @GetMapping("/resumo")
     public ResumoPedidosClienteDTO getResumoPedidos(@RequestParam Integer idCliente){
         return service.getResumoPedidos(idCliente);
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id)
+    {
+        service.delete(id);
     }
 }
