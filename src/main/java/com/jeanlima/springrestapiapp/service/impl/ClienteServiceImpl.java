@@ -1,11 +1,16 @@
 package com.jeanlima.springrestapiapp.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.el.util.ReflectionUtil;
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.jeanlima.springrestapiapp.model.Cliente;
@@ -71,7 +76,18 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public void patch(Integer id, Cliente cliente) {
+    public void patch(Integer id, Map<String, Object> fields) {
+        var cliente = repository.findById(id);
 
+        if (cliente.isPresent())
+        {
+            fields.forEach((key, value) -> {
+                Field field = ReflectionUtils.findField(Cliente.class, key);
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, cliente.get(), value);
+            });
+    
+            repository.save(cliente.get());
+        }
     }
 }

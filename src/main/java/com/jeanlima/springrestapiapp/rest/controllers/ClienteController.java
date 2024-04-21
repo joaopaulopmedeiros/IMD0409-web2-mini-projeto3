@@ -1,6 +1,8 @@
 package com.jeanlima.springrestapiapp.rest.controllers;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +58,7 @@ public class ClienteController {
 
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void patch(@PathVariable Integer id, @RequestBody Cliente cliente){
-        service.patch(id, cliente);
+    public void patch(@PathVariable Integer id, @RequestBody Map<String, Object> fields){
+        service.patch(id, fields);
     }
 }
