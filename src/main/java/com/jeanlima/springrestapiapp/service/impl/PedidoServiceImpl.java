@@ -17,8 +17,10 @@ import com.jeanlima.springrestapiapp.repository.ClienteRepository;
 import com.jeanlima.springrestapiapp.repository.ItemPedidoRepository;
 import com.jeanlima.springrestapiapp.repository.PedidoRepository;
 import com.jeanlima.springrestapiapp.repository.ProdutoRepository;
+import com.jeanlima.springrestapiapp.rest.dto.ClienteDTO;
 import com.jeanlima.springrestapiapp.rest.dto.ItemPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.PedidoDTO;
+import com.jeanlima.springrestapiapp.rest.dto.ResumoPedidosClienteDTO;
 import com.jeanlima.springrestapiapp.service.PedidoService;
 
 import jakarta.transaction.Transactional;
@@ -90,6 +92,20 @@ public class PedidoServiceImpl implements PedidoService {
             return repository.save(pedido);
         }).orElseThrow(() -> new PedidoNaoEncontradoException() );
     }
-    
-    
+
+    @Override
+    public ResumoPedidosClienteDTO getResumoPedidos(Integer idCliente) {
+        Cliente cliente = clientesRepository
+                .findById(idCliente)
+                .orElseThrow(() -> new RegraNegocioException("Código de cliente inválido."));
+
+        ClienteDTO clienteDTO = ClienteDTO.builder()
+        .id(cliente.getId())
+        .nome(cliente.getNome())
+        .build();
+                
+        return ResumoPedidosClienteDTO.builder()
+        .cliente(clienteDTO)
+        .build();
+    }
 }
