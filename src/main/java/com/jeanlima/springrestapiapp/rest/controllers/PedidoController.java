@@ -27,7 +27,7 @@ import com.jeanlima.springrestapiapp.rest.dto.AtualizacaoStatusPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.InformacaoItemPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.InformacoesPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.PedidoDTO;
-import com.jeanlima.springrestapiapp.rest.dto.ResumoPedidosClienteDTO;
+import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoPedidosClienteDTO;
 import com.jeanlima.springrestapiapp.service.PedidoService;
 
 @RestController

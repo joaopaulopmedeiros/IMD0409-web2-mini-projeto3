@@ -20,7 +20,9 @@ import com.jeanlima.springrestapiapp.repository.ProdutoRepository;
 import com.jeanlima.springrestapiapp.rest.dto.ClienteDTO;
 import com.jeanlima.springrestapiapp.rest.dto.ItemPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.PedidoDTO;
-import com.jeanlima.springrestapiapp.rest.dto.ResumoPedidosClienteDTO;
+import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoItemDTO;
+import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoPedidoDTO;
+import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoPedidosClienteDTO;
 import com.jeanlima.springrestapiapp.service.PedidoService;
 
 import jakarta.transaction.Transactional;
@@ -39,9 +41,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Transactional
     public Pedido salvar(PedidoDTO dto) {
         Integer idCliente = dto.getCliente();
-        Cliente cliente = clientesRepository
-                .findById(idCliente)
-                .orElseThrow(() -> new RegraNegocioException("Código de cliente inválido."));
+        Cliente cliente = obterCliente(idCliente);
 
         Pedido pedido = new Pedido();
         pedido.setTotal(dto.getTotal());
@@ -95,9 +95,7 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     public ResumoPedidosClienteDTO getResumoPedidos(Integer idCliente) {
-        Cliente cliente = clientesRepository
-                .findById(idCliente)
-                .orElseThrow(() -> new RegraNegocioException("Código de cliente inválido."));
+        Cliente cliente = obterCliente(idCliente);
 
         ClienteDTO clienteDTO = ClienteDTO.builder()
         .id(cliente.getId())
@@ -111,15 +109,32 @@ public class PedidoServiceImpl implements PedidoService {
         .pedidos(converterPedidos(pedidos))
         .build();
     }
-    private List<PedidoDTO> converterPedidos(List<Pedido> pedidos) {
+
+    private Cliente obterCliente(Integer idCliente) {
+        return clientesRepository
+        .findById(idCliente)
+        .orElseThrow(() -> new RegraNegocioException("Código de cliente inválido."));
+    }
+
+    private List<ResumoPedidoDTO> converterPedidos(List<Pedido> pedidos) {
         return pedidos
                 .stream()
                 .map(pedido -> {
-                    var dto = new PedidoDTO();
-                    dto.setCliente(pedido.getCliente().getId());
-                    //dto.setItems(pedido.getItens()));
+                    var dto = new ResumoPedidoDTO();
+                    dto.setItems(converterItems(pedido.getItens()));
                     dto.setTotal(pedido.getTotal());
                     return dto;
                 }).collect(Collectors.toList());        
+    }
+    
+    private List<ResumoItemDTO> converterItems(List<ItemPedido> itens) {
+        return itens
+                .stream()
+                .map(item -> {
+                    var dto = new ResumoItemDTO();
+                    dto.setDescricao(item.getProduto().getDescricao());                    
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
