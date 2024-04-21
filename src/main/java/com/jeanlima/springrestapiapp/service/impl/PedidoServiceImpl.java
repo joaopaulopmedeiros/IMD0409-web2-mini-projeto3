@@ -103,9 +103,23 @@ public class PedidoServiceImpl implements PedidoService {
         .id(cliente.getId())
         .nome(cliente.getNome())
         .build();
+
+        List<Pedido> pedidos = repository.findByCliente(cliente);        
                 
         return ResumoPedidosClienteDTO.builder()
         .cliente(clienteDTO)
+        .pedidos(converterPedidos(pedidos))
         .build();
+    }
+    private List<PedidoDTO> converterPedidos(List<Pedido> pedidos) {
+        return pedidos
+                .stream()
+                .map(pedido -> {
+                    var dto = new PedidoDTO();
+                    dto.setCliente(pedido.getCliente().getId());
+                    //dto.setItems(pedido.getItens()));
+                    dto.setTotal(pedido.getTotal());
+                    return dto;
+                }).collect(Collectors.toList());        
     }
 }
