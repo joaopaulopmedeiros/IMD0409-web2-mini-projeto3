@@ -1,6 +1,7 @@
 package com.jeanlima.springrestapiapp.utils;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -16,8 +17,17 @@ public class Patcher<T>
             if (field != null) 
             {
                 field.setAccessible(true);
-                ReflectionUtils.setField(field, object, value);
+                Object finalValue = convertValue(field.getType(), value);
+                ReflectionUtils.setField(field, object, finalValue);
             }
         });
+    }
+
+    private Object convertValue(Class<?> targetType, Object value) {
+        if (targetType == BigDecimal.class && value instanceof Double) 
+        {
+            return BigDecimal.valueOf((Double) value);
+        }
+        return value;
     }
 }
