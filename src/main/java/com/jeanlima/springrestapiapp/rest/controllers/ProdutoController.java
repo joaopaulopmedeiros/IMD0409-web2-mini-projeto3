@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,17 +24,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.jeanlima.springrestapiapp.model.Produto;
 import com.jeanlima.springrestapiapp.repository.ProdutoRepository;
+import com.jeanlima.springrestapiapp.service.ProdutoService;
 
-
-
-
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/produtos")
+@RequiredArgsConstructor
 public class ProdutoController {
-
-    @Autowired
-    private ProdutoRepository repository;
+    private final ProdutoRepository repository;
+    private final ProdutoService service;
 
     @PostMapping
     @ResponseStatus(CREATED)
@@ -86,5 +87,11 @@ public class ProdutoController {
 
         Example example = Example.of(filtro, matcher);
         return repository.findAll(example);
+    }
+
+    @PatchMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void patch(@PathVariable Integer id, @RequestBody Map<String, Object> fields){
+        service.patch(id, fields);
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.jeanlima.springrestapiapp.model.Cliente;
 import com.jeanlima.springrestapiapp.repository.ClienteRepository;
 import com.jeanlima.springrestapiapp.service.ClienteService;
+import com.jeanlima.springrestapiapp.utils.Patcher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository repository;
+    private final Patcher<Cliente> patcher;
 
     @Override
     public Cliente getById(Integer id) {
@@ -81,12 +83,7 @@ public class ClienteServiceImpl implements ClienteService {
 
         if (cliente.isPresent())
         {
-            fields.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(Cliente.class, key);
-                field.setAccessible(true);
-                ReflectionUtils.setField(field, cliente.get(), value);
-            });
-    
+            patcher.patch(cliente.get(), fields);
             repository.save(cliente.get());
         }
     }
