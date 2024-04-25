@@ -1,4 +1,5 @@
 package com.jeanlima.springrestapiapp.service.impl;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -44,18 +45,35 @@ public class PedidoServiceImpl implements PedidoService {
         Cliente cliente = obterCliente(idCliente);
 
         Pedido pedido = new Pedido();
-        pedido.setTotal(dto.getTotal());
         pedido.setDataPedido(LocalDate.now());
         pedido.setCliente(cliente);
         pedido.setStatus(StatusPedido.REALIZADO);
 
         List<ItemPedido> itemsPedido = converterItems(pedido, dto.getItems());
+
+        pedido.setTotal(calcularTotal(itemsPedido));
+
         repository.save(pedido);
         itemsPedidoRepository.saveAll(itemsPedido);
         pedido.setItens(itemsPedido);
         return pedido;
     }
-    private List<ItemPedido> converterItems(Pedido pedido, List<ItemPedidoDTO> items){
+    
+    private BigDecimal calcularTotal(List<ItemPedido> itemsPedido) 
+    {
+        BigDecimal total = BigDecimal.ZERO;
+        
+        for (ItemPedido item : itemsPedido) 
+        {
+            BigDecimal precoItem = item.getProduto().getPreco(); 
+            int quantidadeItem = item.getQuantidade();
+            BigDecimal subtotalItem = precoItem.multiply(BigDecimal.valueOf(quantidadeItem));
+            total = total.add(subtotalItem);
+        }
+        
+        return total;
+    }
+    private List<ItemPedido> converterItems(Pedido pedido, List<ItemPedidoDTO> items) {
         if(items.isEmpty()){
             throw new RegraNegocioException("Não é possível realizar um pedido sem items.");
         }
