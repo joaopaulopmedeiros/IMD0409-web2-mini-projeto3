@@ -33,8 +33,8 @@ public class EstoqueController
     }
     
     @GetMapping
-    public List<Estoque> filterByProductName(@RequestParam String nomeProduto) 
+    public List<Estoque> filterbyDescricao(@RequestParam String descricao) 
     {
-        return service.filterByProductName(nomeProduto);
+        return service.filterbyDescricao(descricao);
     }
 }

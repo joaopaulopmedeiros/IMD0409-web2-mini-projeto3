@@ -9,5 +9,5 @@ public interface EstoqueService
 {
     Estoque save(EstoqueDTO estoque);
 
-    List<Estoque> filterByProductName(String nomeProduto);
+    List<Estoque> filterbyDescricao(String descricao);
 }

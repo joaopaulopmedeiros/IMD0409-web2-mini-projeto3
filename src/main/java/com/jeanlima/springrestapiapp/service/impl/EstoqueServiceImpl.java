@@ -30,8 +30,7 @@ public class EstoqueServiceImpl implements EstoqueService
     }
 
     @Override
-    public List<Estoque> filterByProductName(String nomeProduto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'filterByProductName'");
+    public List<Estoque> filterbyDescricao(String descricao) {
+        return repository.findbyDescricao(descricao);
     }
 }
