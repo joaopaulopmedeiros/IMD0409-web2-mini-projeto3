@@ -42,6 +42,8 @@ public class EstoqueServiceImpl implements EstoqueService
 
         if (!estoque.isPresent()) throw new RegraNegocioException("Id não existente para estoque");
 
+        if (dto.getQuantidade() < 0) throw new RegraNegocioException("Quantidade não pode ser negativa");
+
         estoque.get().setQuantidade(dto.getQuantidade());
 
         repository.save(estoque.get());
