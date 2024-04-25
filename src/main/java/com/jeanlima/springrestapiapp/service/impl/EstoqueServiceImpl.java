@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.jeanlima.springrestapiapp.exception.RegraNegocioException;
 import com.jeanlima.springrestapiapp.model.Estoque;
 import com.jeanlima.springrestapiapp.repository.EstoqueRepository;
+import com.jeanlima.springrestapiapp.rest.dto.AlteracaoQuantidadeEstoqueDTO;
 import com.jeanlima.springrestapiapp.rest.dto.EstoqueDTO;
 import com.jeanlima.springrestapiapp.service.EstoqueService;
 
@@ -32,5 +34,16 @@ public class EstoqueServiceImpl implements EstoqueService
     @Override
     public List<Estoque> filterbyDescricao(String descricao) {
         return repository.findbyDescricao(descricao);
+    }
+
+    @Override
+    public void alterarQuantidadeEstoque(Integer id, AlteracaoQuantidadeEstoqueDTO dto) {
+        var estoque = repository.findById(id);
+
+        if (!estoque.isPresent()) throw new RegraNegocioException("Id não existente para estoque");
+
+        estoque.get().setQuantidade(dto.getQuantidade());
+
+        repository.save(estoque.get());
     }
 }
