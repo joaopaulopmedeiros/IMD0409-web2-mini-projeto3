@@ -182,4 +182,24 @@ public class PedidoServiceImpl implements PedidoService {
     public void delete(Integer id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public void update(Integer id, PedidoDTO dto) 
+    {
+        Cliente cliente = obterCliente(dto.getCliente());      
+        
+        Optional<Pedido> pedidoBuscado = repository.findById(id);
+
+        if (pedidoBuscado.isPresent()) 
+        {
+            Pedido pedido = pedidoBuscado.get();
+
+            pedido.setCliente(cliente);
+
+            List<ItemPedido> itemsPedido = converterItems(pedido, dto.getItems());
+            pedido.setTotal(calcularTotal(itemsPedido));
+
+            repository.save(pedido);
+        }
+    }
 }
