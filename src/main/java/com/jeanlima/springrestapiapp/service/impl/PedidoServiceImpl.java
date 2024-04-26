@@ -1,6 +1,8 @@
 package com.jeanlima.springrestapiapp.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -206,18 +208,46 @@ public class PedidoServiceImpl implements PedidoService {
         }
     }
 
-    private void atualizarItensPedido(Pedido pedido, List<ItemPedido> novosItemsPedido) {
-        List<ItemPedido> itemsPedidoAtuais = pedido.getItens();
-    
-        for (ItemPedido itemAtual : itemsPedidoAtuais) 
+    private void atualizarItensPedido(Pedido pedido, List<ItemPedido> novosItemsPedido) 
+    {
+        List<Integer> novosIds = new ArrayList<>();
+        
+        for (ItemPedido novoItem : novosItemsPedido) 
         {
-            boolean itemAtualRemovidoNovaLista = !novosItemsPedido.contains(itemAtual);
-            if (itemAtualRemovidoNovaLista) 
+            novosIds.add(novoItem.getProduto().getId());
+        }
+    
+        Iterator<ItemPedido> iterator = pedido.getItens().iterator();
+        
+        while (iterator.hasNext()) 
+        {
+            ItemPedido itemAtual = iterator.next();
+
+            if (!novosIds.contains(itemAtual.getProduto().getId())) 
             {
                 estoqueService.adicionarQuantidadeEstoquePorIdProduto(
                     itemAtual.getProduto().getId(), 
                     itemAtual.getQuantidade()
                 );
+                iterator.remove();
+            }
+        }
+
+
+        for (ItemPedido novoItem : novosItemsPedido) 
+        {
+            boolean itemAtualizado = pedido
+                .getItens()
+                .stream()
+                .anyMatch(itemAtual -> itemAtual.getProduto().getId().equals(novoItem.getProduto().getId()));
+
+            if (!itemAtualizado) 
+            {
+                estoqueService.reduzirQuantidadeEstoquePorIdProduto(
+                    novoItem.getProduto().getId(), 
+                    novoItem.getQuantidade()
+                );                
+                pedido.getItens().add(novoItem);
             }
         }
     }
