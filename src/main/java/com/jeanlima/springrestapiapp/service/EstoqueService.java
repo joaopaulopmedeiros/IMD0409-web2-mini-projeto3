@@ -16,5 +16,7 @@ public interface EstoqueService
 
     boolean verificarDisponibilidade(Integer produto, Integer quantidade);
 
-    void alterarQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade);
+    void reduzirQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade);
+
+    void adicionarQuantidadeEstoquePorIdProduto(Integer id, Integer quantidade);
 }

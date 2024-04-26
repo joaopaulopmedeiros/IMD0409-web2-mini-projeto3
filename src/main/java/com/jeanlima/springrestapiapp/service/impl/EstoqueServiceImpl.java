@@ -57,13 +57,25 @@ public class EstoqueServiceImpl implements EstoqueService
     }
 
     @Override
-    public void alterarQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade) 
+    public void reduzirQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade) 
     {
         var estoque = repository.findbyIdProduto(produto);
 
         if (estoque != null) 
         {
             var quantidadeAtual = estoque.getQuantidade() - quantidade;
+            estoque.setQuantidade(quantidadeAtual);
+            repository.save(estoque);
+        }
+    }
+
+    @Override
+    public void adicionarQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade) {
+        var estoque = repository.findbyIdProduto(produto);
+
+        if (estoque != null) 
+        {
+            var quantidadeAtual = estoque.getQuantidade() + quantidade;
             estoque.setQuantidade(quantidadeAtual);
             repository.save(estoque);
         }

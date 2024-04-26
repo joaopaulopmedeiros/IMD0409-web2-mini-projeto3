@@ -139,9 +139,23 @@ public class Pedido {
         return true;
     }
 
-    
-    
+    public boolean possuiCliente(Cliente input) 
+    {
+        return getCliente().equals(input);
+    }
 
+    public boolean possuiMesmosItens(List<ItemPedido> itensPedido) 
+    {
+        return getItens().equals(itensPedido);
+    }
     
+    public void limparItensPedido() 
+    {
+        setItens(null);
+    }
     
+    public void adicionarItensPedido(List<ItemPedido> novosItemsPedido) 
+    {
+        setItens(novosItemsPedido);
+    }
 }

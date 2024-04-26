@@ -77,7 +77,7 @@ public class PedidoServiceImpl implements PedidoService {
     private void atualizarEstoque(List<ItemPedidoDTO> items) {
         for (ItemPedidoDTO item : items) 
         {
-            estoqueService.alterarQuantidadeEstoquePorIdProduto(item.getProduto(), item.getQuantidade());
+            estoqueService.reduzirQuantidadeEstoquePorIdProduto(item.getProduto(), item.getQuantidade());
         }
     }
 
@@ -194,12 +194,32 @@ public class PedidoServiceImpl implements PedidoService {
         {
             Pedido pedido = pedidoBuscado.get();
 
-            pedido.setCliente(cliente);
+            if (!pedido.possuiCliente(cliente)) pedido.setCliente(cliente);
 
             List<ItemPedido> itemsPedido = converterItems(pedido, dto.getItems());
+
+            if (!pedido.possuiMesmosItens(itemsPedido)) atualizarItensPedido(pedido, itemsPedido);
+
             pedido.setTotal(calcularTotal(itemsPedido));
 
             repository.save(pedido);
         }
+    }
+
+    private void atualizarItensPedido(Pedido pedido, List<ItemPedido> novosItemsPedido) {
+        List<ItemPedido> itemsPedidoAtuais = pedido.getItens();
+    
+        for (ItemPedido itemAtual : itemsPedidoAtuais) 
+        {
+            if (!novosItemsPedido.contains(itemAtual)) 
+            {
+                var idProduto = itemAtual.getProduto().getId();
+                var quantidade = itemAtual.getQuantidade();
+                estoqueService.adicionarQuantidadeEstoquePorIdProduto(idProduto, quantidade);
+            }
+        }
+    
+        pedido.limparItensPedido();
+        pedido.adicionarItensPedido(novosItemsPedido);
     }
 }
