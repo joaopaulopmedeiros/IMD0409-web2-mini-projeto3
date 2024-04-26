@@ -211,15 +211,14 @@ public class PedidoServiceImpl implements PedidoService {
     
         for (ItemPedido itemAtual : itemsPedidoAtuais) 
         {
-            if (!novosItemsPedido.contains(itemAtual)) 
+            boolean itemAtualRemovidoNovaLista = !novosItemsPedido.contains(itemAtual);
+            if (itemAtualRemovidoNovaLista) 
             {
-                var idProduto = itemAtual.getProduto().getId();
-                var quantidade = itemAtual.getQuantidade();
-                estoqueService.adicionarQuantidadeEstoquePorIdProduto(idProduto, quantidade);
+                estoqueService.adicionarQuantidadeEstoquePorIdProduto(
+                    itemAtual.getProduto().getId(), 
+                    itemAtual.getQuantidade()
+                );
             }
         }
-    
-        pedido.limparItensPedido();
-        pedido.adicionarItensPedido(novosItemsPedido);
     }
 }
