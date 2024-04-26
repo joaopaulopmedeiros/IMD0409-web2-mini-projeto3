@@ -13,4 +13,8 @@ public interface EstoqueService
     List<Estoque> filterbyDescricao(String descricao);
 
     void alterarQuantidadeEstoque(Integer id, AlteracaoQuantidadeEstoqueDTO dto);
+
+    boolean verificarDisponibilidade(Integer produto, Integer quantidade);
+
+    void alterarQuantidadeEstoquePorIdProduto(Integer produto, Integer quantidade);
 }

@@ -24,6 +24,7 @@ import com.jeanlima.springrestapiapp.rest.dto.PedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoItemDTO;
 import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoPedidoDTO;
 import com.jeanlima.springrestapiapp.rest.dto.resumo.ResumoPedidosClienteDTO;
+import com.jeanlima.springrestapiapp.service.EstoqueService;
 import com.jeanlima.springrestapiapp.service.PedidoService;
 
 import jakarta.transaction.Transactional;
@@ -37,6 +38,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final ClienteRepository clientesRepository;
     private final ProdutoRepository produtosRepository;
     private final ItemPedidoRepository itemsPedidoRepository;
+    private final EstoqueService estoqueService;
 
     @Override
     @Transactional
@@ -53,12 +55,32 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedido.setTotal(calcularTotal(itemsPedido));
 
+        verificarDisponibilidadeEstoque(dto.getItems());
+        atualizarEstoque(dto.getItems());
+
         repository.save(pedido);
         itemsPedidoRepository.saveAll(itemsPedido);
         pedido.setItens(itemsPedido);
+
         return pedido;
     }
-    
+
+    private void verificarDisponibilidadeEstoque(List<ItemPedidoDTO> items) 
+    {
+        for (ItemPedidoDTO item : items) {
+            if (!estoqueService.verificarDisponibilidade(item.getProduto(), item.getQuantidade())) {
+                throw new RegraNegocioException("O estoque do produto " + item.getProduto() + " está esgotado.");
+            }
+        }
+    }
+
+    private void atualizarEstoque(List<ItemPedidoDTO> items) {
+        for (ItemPedidoDTO item : items) 
+        {
+            estoqueService.alterarQuantidadeEstoquePorIdProduto(item.getProduto(), item.getQuantidade());
+        }
+    }
+
     private BigDecimal calcularTotal(List<ItemPedido> itemsPedido) 
     {
         BigDecimal total = BigDecimal.ZERO;

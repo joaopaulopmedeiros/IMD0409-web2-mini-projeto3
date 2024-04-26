@@ -15,5 +15,11 @@ public interface EstoqueRepository extends JpaRepository<Estoque,Integer>
     "JOIN Produto p ON e.produtoId = p.id " +
     "WHERE p.descricao = :descricao " +
     "ORDER BY p.descricao ASC")
-    List<Estoque> findbyDescricao(@Param("descricao") String descricao);    
+    List<Estoque> findbyDescricao(@Param("descricao") String descricao);
+
+    @Query("SELECT e " +
+    "FROM Estoque e " +
+    "WHERE e.produtoId = :idProduto " +
+    "ORDER BY e.id ASC")    
+    Estoque findbyIdProduto(@Param("idProduto") Integer idProduto);    
 }
